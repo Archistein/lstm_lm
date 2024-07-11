@@ -15,7 +15,7 @@ def main() -> None:
     tokenizer_root = 'tokenizer'
     weights_root = 'weights'
 
-    device = torch.device('cpu')#'cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     vocab_size = 512
     n_emb = 64
