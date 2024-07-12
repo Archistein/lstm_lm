@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader, Dataset, random_split
+from math import exp
 
 
 class JokesDataset(Dataset):
@@ -29,7 +30,7 @@ def get_data_loaders(data: torch.Tensor, split_ratio: float = 0.9, batch_size: i
     train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
     train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-    test_data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+    test_data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
 
     return train_data_loader, test_data_loader
 
@@ -51,7 +52,7 @@ def evaluate(model: nn.Module, criterion: callable, data_loader: DataLoader, dev
 
     model.train()
 
-    return average_loss/len(data_loader)
+    return average_loss.item()/len(data_loader)
 
 
 def trainer(model: nn.Module, 
@@ -93,8 +94,8 @@ def trainer(model: nn.Module,
 
             if (i % (len(train_data_loader)//5) == 0):
                 val_loss = evaluate(model, criterion, test_data_loader, device)
-                print(f'Val_Loss: {val_loss:.4f} Val_Perplexity: {torch.exp(val_loss)}')
+                print(f'Val_Loss: {val_loss:.4f} Val_Perplexity: {exp(val_loss)}')
 
             if (i % (len(train_data_loader)//50) == 0):
-                print(f'Epoch [{e}/{epoch-1}] Batch [{i}/{len(train_data_loader)-1}] Loss: {loss:.4f} Perplexity: {torch.exp(loss):.4f}')
+                print(f'Epoch [{e}/{epoch-1}] Batch [{i}/{len(train_data_loader)-1}] Loss: {loss:.4f} Perplexity: {exp(loss):.4f}')
     
